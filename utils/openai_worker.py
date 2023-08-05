@@ -1,9 +1,10 @@
-from config import Configuration
+from .config import Configuration
 
 import openai
 import tiktoken
 
 import asyncio
+import traceback
 
 openai.api_key = Configuration.openai_token
 
@@ -19,7 +20,7 @@ class AIWorker:
         answer = 'Упс.. Щось пішло не так в запиті до ChatGPT. Будь ласка, спробуйте ще раз'
         try:
             response = await openai.ChatCompletion.acreate(
-                engine=AIWorker.chat_model,
+                model=AIWorker.chat_model,
                 messages=messages,
                 temperature=0.7,
                 max_tokens=800,
@@ -30,6 +31,7 @@ class AIWorker:
             )
         except openai.error.APIConnectionError as e:
             print(f"An error occurred while calling OpenAI API: {e}")
+            print(traceback.format_exc())
         else:
             if 'choices' in response and len(response['choices']) > 0:
                 answer = response['choices'][0]['message']['content']

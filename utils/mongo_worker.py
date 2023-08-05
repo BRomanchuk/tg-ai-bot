@@ -1,19 +1,21 @@
-from config import Configuration
+from .config import Configuration
 
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+import certifi
 
 
 class MongoWorker:
 
-    client = MongoClient(Configuration.mongo_db_uri)
+    client = MongoClient(Configuration.mongo_db_uri, server_api=ServerApi('1'), tlsCAFile=certifi.where())
 
     # Get the database
     db = client['ai-bot-db']
     users_container = db['users']
 
     @staticmethod
-    def get_jsons(container, parameters):
-        return container.find_all(parameters)
+    def get_json(container, parameters):
+        return container.find_one(parameters)
 
     @staticmethod
     def add_json(container, json):
@@ -24,8 +26,8 @@ class MongoWorker:
         return container.update_one(parameters, {'$set': updated_json})
 
     @staticmethod
-    def get_users(parameters):
-        return MongoWorker.get_jsons(
+    def get_user(parameters):
+        return MongoWorker.get_json(
             container=MongoWorker.users_container,
             parameters=parameters
         )

@@ -8,13 +8,14 @@ bot = Bot(token=Configuration.telegram_bot_token)
 dp = Dispatcher(bot)
 
 
-@dp.message_handler(commands=['/start'])
+@dp.message_handler(commands=['start'])
 async def start(message: types.Message):
+    print(1)
     await bot.send_chat_action(chat_id=message.chat.id, action=types.ChatActions.TYPING)
     await TelegramWorker.start(message)
 
 
-@dp.message_handler(commands=['/reset_context'])
+@dp.message_handler(commands=['reset_context'])
 async def reset_context(message: types.Message):
     await bot.send_chat_action(chat_id=message.chat.id, action=types.ChatActions.TYPING)
     await TelegramWorker.reset_context(message)
@@ -22,5 +23,6 @@ async def reset_context(message: types.Message):
 
 @dp.message_handler()
 async def text(message: types.Message):
+    print(2)
     await bot.send_chat_action(chat_id=message.chat.id, action=types.ChatActions.TYPING)
     await TelegramWorker.gpt(message)
